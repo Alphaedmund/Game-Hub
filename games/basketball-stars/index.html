@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Basketball Stars Clone</title>
+  <style>
+    body {
+      background: #222;
+      color: #fff;
+      font-family: sans-serif;
+      text-align: center;
+    }
+    canvas {
+      background: #444;
+      display: block;
+      margin: 2rem auto;
+      border: 2px solid #fff;
+    }
+  </style>
+</head>
+<body>
+  <h1>Basketball Stars (Clone)</h1>
+  <canvas id="game" width="600" height="400"></canvas>
+  <script>
+    const canvas = document.getElementById("game");
+    const ctx = canvas.getContext("2d");
+
+    let ball = { x: 300, y: 200, dx: 4, dy: -4, r: 10 };
+    let hoop = { x: 550, y: 150, w: 10, h: 100 };
+    let score = 0;
+
+    function drawBall() {
+      ctx.beginPath();
+      ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI * 2);
+      ctx.fillStyle = "#ffcc00";
+      ctx.fill();
+      ctx.closePath();
+    }
+
+    function drawHoop() {
+      ctx.fillStyle = "#00ffcc";
+      ctx.fillRect(hoop.x, hoop.y, hoop.w, hoop.h);
+    }
+
+    function drawScore() {
+      ctx.font = "20px Arial";
+      ctx.fillText("Score: " + score, 20, 30);
+    }
+
+    function update() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawBall();
+      drawHoop();
+      drawScore();
+
+      ball.x += ball.dx;
+      ball.y += ball.dy;
+
+      if (ball.y + ball.r > canvas.height || ball.y - ball.r < 0) ball.dy *= -1;
+      if (ball.x + ball.r > canvas.width || ball.x - ball.r < 0) ball.dx *= -1;
+
+      if (
+        ball.x + ball.r > hoop.x &&
+        ball.y > hoop.y &&
+        ball.y < hoop.y + hoop.h
+      ) {
+        score++;
+        ball.x = 300;
+        ball.y = 200;
+        ball.dx = 4 * (Math.random() > 0.5 ? 1 : -1);
+        ball.dy = -4;
+      }
+    }
+
+    document.addEventListener("keydown", e => {
+      if (e.key === " ") {
+        ball.dy = -8;
+      }
+    });
+
+    setInterval(update, 1000 / 60);
+  </script>
+</body>
+</html>
