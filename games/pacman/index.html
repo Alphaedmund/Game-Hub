@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Pac-Man</title>
+  <style>
+    body { background: #000; color: #fff; text-align: center; font-family: sans-serif; }
+    canvas { background: #111; display: block; margin: 2rem auto; }
+  </style>
+</head>
+<body>
+  <h1>Pac-Man (Mini Clone)</h1>
+  <canvas id="game" width="400" height="400"></canvas>
+  <script>
+    const canvas = document.getElementById("game");
+    const ctx = canvas.getContext("2d");
+
+    const gridSize = 20;
+    const tileCount = canvas.width / gridSize;
+
+    let pacman = { x: 1, y: 1, dx: 1, dy: 0 };
+    let dots = [];
+
+    for (let y = 0; y < tileCount; y++) {
+      for (let x = 0; x < tileCount; x++) {
+        if (!(x === pacman.x && y === pacman.y)) {
+          dots.push({ x, y });
+        }
+      }
+    }
+
+    function drawTile(x, y, color) {
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.arc(x * gridSize + gridSize / 2, y * gridSize + gridSize / 2, gridSize / 4, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    function drawPacman() {
+      ctx.fillStyle = "yellow";
+      ctx.beginPath();
+      ctx.arc(pacman.x * gridSize + gridSize / 2, pacman.y * gridSize + gridSize / 2, gridSize / 2.5, 0.2 * Math.PI, 1.8 * Math.PI);
+      ctx.lineTo(pacman.x * gridSize + gridSize / 2, pacman.y * gridSize + gridSize / 2);
+      ctx.fill();
+    }
+
+    function gameLoop() {
+      pacman.x += pacman.dx;
+      pacman.y += pacman.dy;
+
+      if (pacman.x < 0) pacman.x = tileCount - 1;
+      if (pacman.x >= tileCount) pacman.x = 0;
+      if (pacman.y < 0) pacman.y = tileCount - 1;
+      if (pacman.y >= tileCount) pacman.y = 0;
+
+      dots = dots.filter(dot => !(dot.x === pacman.x && dot.y === pacman.y));
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      dots.forEach(dot => drawTile(dot.x, dot.y, "white"));
+      drawPacman();
+    }
+
+    document.addEventListener("keydown", e => {
+      if (e.key === "ArrowUp") { pacman.dx = 0; pacman.dy = -1; }
+      if (e.key === "ArrowDown") { pacman.dx = 0; pacman.dy = 1; }
+      if (e.key === "ArrowLeft") { pacman.dx = -1; pacman.dy = 0; }
+      if (e.key === "ArrowRight") { pacman.dx = 1; pacman.dy = 0; }
+    });
+
+    setInterval(gameLoop, 150);
+  </script>
+</body>
+</html>
