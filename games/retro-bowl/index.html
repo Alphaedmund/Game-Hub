@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Retro Bowl Clone</title>
+  <style>
+    body { background: #111; color: #fff; text-align: center; font-family: sans-serif; }
+    canvas { background: #222; display: block; margin: 2rem auto; border: 2px solid #fff; }
+  </style>
+</head>
+<body>
+  <h1>Retro Bowl (Mini Clone)</h1>
+  <canvas id="game" width="600" height="400"></canvas>
+  <script>
+    const canvas = document.getElementById("game");
+    const ctx = canvas.getContext("2d");
+
+    let ball = { x: 300, y: 200, dx: 5, dy: -5, r: 8 };
+    let player = { x: 50, y: 200, w: 20, h: 60 };
+    let defenders = [
+      { x: 400, y: 150, w: 20, h: 60 },
+      { x: 500, y: 250, w: 20, h: 60 }
+    ];
+    let score = 0;
+
+    function drawRect(obj, color) {
+      ctx.fillStyle = color;
+      ctx.fillRect(obj.x, obj.y, obj.w, obj.h);
+    }
+
+    function drawBall() {
+      ctx.fillStyle = "orange";
+      ctx.beginPath();
+      ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    function drawScore() {
+      ctx.font = "20px Arial";
+      ctx.fillText("Score: " + score, 20, 30);
+    }
+
+    function update() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawRect(player, "lime");
+      defenders.forEach(d => drawRect(d, "red"));
+      drawBall();
+      drawScore();
+
+      ball.x += ball.dx;
+      ball.y += ball.dy;
+
+      if (ball.y < 0 || ball.y > canvas.height) ball.dy *= -1;
+
+      defenders.forEach(d => {
+        if (
+          ball.x + ball.r > d.x &&
+          ball.x - ball.r < d.x + d.w &&
+          ball.y + ball.r > d.y &&
+          ball.y - ball.r < d.y + d.h
+        ) {
+          ball.dx *= -1;
+        }
+      });
+
+      if (ball.x > canvas.width) {
+        score++;
+        ball.x = player.x + player.w;
+        ball.y = player.y + player.h / 2;
+        ball.dx = 5;
+        ball.dy = (Math.random() - 0.5) * 10;
+      }
+    }
+
+    document.addEventListener("keydown", e => {
+      if (e.key === "ArrowUp") player.y -= 20;
+      if (e.key === "ArrowDown") player.y += 20;
+      if (e.key === " ") {
+        ball.x = player.x + player.w;
+        ball.y = player.y + player.h / 2;
+        ball.dx = 5;
+        ball.dy = (Math.random() - 0.5) * 10;
+      }
+    });
+
+    setInterval(update, 1000 / 60);
+  </script>
+</body>
+</html>
