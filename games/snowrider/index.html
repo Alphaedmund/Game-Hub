@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Snow Rider Clone</title>
+  <style>
+    body { background: #111; color: #fff; text-align: center; font-family: sans-serif; }
+    canvas { background: #87ceeb; display: block; margin: 2rem auto; border: 2px solid #fff; }
+  </style>
+</head>
+<body>
+  <h1>Snow Rider (Clone)</h1>
+  <canvas id="game" width="600" height="400"></canvas>
+  <script>
+    const canvas = document.getElementById("game");
+    const ctx = canvas.getContext("2d");
+
+    let sled = { x: 300, y: 350, w: 40, h: 20 };
+    let obstacles = [];
+    let score = 0;
+
+    function drawSled() {
+      ctx.fillStyle = "white";
+      ctx.fillRect(sled.x, sled.y, sled.w, sled.h);
+    }
+
+    function drawObstacles() {
+      ctx.fillStyle = "brown";
+      obstacles.forEach(o => ctx.fillRect(o.x, o.y, o.w, o.h));
+    }
+
+    function drawScore() {
+      ctx.font = "20px Arial";
+      ctx.fillStyle = "black";
+      ctx.fillText("Score: " + score, 20, 30);
+    }
+
+    function update() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawSled();
+      drawObstacles();
+      drawScore();
+
+      obstacles.forEach(o => {
+        o.y += 4;
+        if (o.y > canvas.height) {
+          o.y = -20;
+          o.x = Math.random() * (canvas.width - o.w);
+          score++;
+        }
+
+        if (
+          sled.x < o.x + o.w &&
+          sled.x + sled.w > o.x &&
+          sled.y < o.y + o.h &&
+          sled.y + sled.h > o.y
+        ) {
+          alert("Game Over! Final Score: " + score);
+          score = 0;
+          obstacles = [];
+          for (let i = 0; i < 5; i++) {
+            obstacles.push({ x: Math.random() * 560, y: -i * 80, w: 40, h: 20 });
+          }
+        }
+      });
+    }
+
+    document.addEventListener("keydown", e => {
+      if (e.key === "ArrowLeft" && sled.x > 0) sled.x -= 20;
+      if (e.key === "ArrowRight" && sled.x < canvas.width - sled.w) sled.x += 20;
+    });
+
+    for (let i = 0; i < 5; i++) {
+      obstacles.push({ x: Math.random() * 560, y: -i * 80, w: 40, h: 20 });
+    }
+
+    setInterval(update, 1000 / 60);
+  </script>
+</body>
+</html>
