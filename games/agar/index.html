@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Agar.io Clone</title>
+  <style>
+    body { background: #111; color: #fff; text-align: center; font-family: sans-serif; }
+    canvas { background: #000; display: block; margin: 2rem auto; border: 2px solid #fff; }
+  </style>
+</head>
+<body>
+  <h1>Agar.io (Mini Clone)</h1>
+  <canvas id="game" width="600" height="400"></canvas>
+  <script>
+    const canvas = document.getElementById("game");
+    const ctx = canvas.getContext("2d");
+
+    let player = { x: 300, y: 200, r: 20 };
+    let food = [];
+
+    for (let i = 0; i < 30; i++) {
+      food.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: 5
+      });
+    }
+
+    function drawCircle(obj, color) {
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.arc(obj.x, obj.y, obj.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    function update() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawCircle(player, "lime");
+
+      food.forEach((f, i) => {
+        drawCircle(f, "red");
+        const dx = f.x - player.x;
+        const dy = f.y - player.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < player.r) {
+          player.r += 1;
+          food.splice(i, 1);
+          food.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            r: 5
+          });
+        }
+      });
+    }
+
+    document.addEventListener("keydown", e => {
+      if (e.key === "ArrowUp") player.y -= 10;
+      if (e.key === "ArrowDown") player.y += 10;
+      if (e.key === "ArrowLeft") player.x -= 10;
+      if (e.key === "ArrowRight") player.x += 10;
+    });
+
+    setInterval(update, 100);
+  </script>
+</body>
+</html>
