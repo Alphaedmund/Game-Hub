@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Cookie Clicker Clone</title>
+  <style>
+    body {
+      background: #222;
+      color: #fff;
+      font-family: sans-serif;
+      text-align: center;
+    }
+    #cookie {
+      width: 200px;
+      height: 200px;
+      background: url('https://upload.wikimedia.org/wikipedia/commons/6/69/Chocolate_Chip_Cookie.png') no-repeat center/cover;
+      margin: 2rem auto;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 4px solid #fff;
+    }
+    #stats {
+      margin-top: 1rem;
+      font-size: 1.2rem;
+    }
+    button {
+      margin: 1rem;
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      cursor: pointer;
+      border-radius: 6px;
+      border: none;
+      background: #00cc88;
+      color: #fff;
+    }
+    button:hover {
+      background: #00aa77;
+    }
+  </style>
+</head>
+<body>
+  <h1>Cookie Clicker (Clone)</h1>
+  <div id="cookie"></div>
+  <div id="stats">Cookies: <span id="count">0</span></div>
+  <button id="upgrade">Buy Upgrade (Cost: 10)</button>
+
+  <script>
+    let count = 0;
+    let cps = 0; // cookies per second
+    let upgradeCost = 10;
+
+    const cookie = document.getElementById("cookie");
+    const countDisplay = document.getElementById("count");
+    const upgradeBtn = document.getElementById("upgrade");
+
+    cookie.addEventListener("click", () => {
+      count++;
+      updateDisplay();
+    });
+
+    upgradeBtn.addEventListener("click", () => {
+      if (count >= upgradeCost) {
+        count -= upgradeCost;
+        cps++;
+        upgradeCost = Math.floor(upgradeCost * 1.5);
+        upgradeBtn.textContent = `Buy Upgrade (Cost: ${upgradeCost})`;
+        updateDisplay();
+      }
+    });
+
+    function updateDisplay() {
+      countDisplay.textContent = count;
+    }
+
+    setInterval(() => {
+      count += cps;
+      updateDisplay();
+    }, 1000);
+  </script>
+</body>
+</html>
