@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Moto X3M Clone</title>
+  <style>
+    body { background:#111; color:#fff; text-align:center; font-family:sans-serif; }
+    canvas { background:#87ceeb; display:block; margin:2rem auto; border:2px solid #fff; }
+  </style>
+</head>
+<body>
+  <h1>Moto X3M (Mini Clone)</h1>
+  <canvas id="game" width="600" height="400"></canvas>
+  <script>
+    const canvas = document.getElementById("game");
+    const ctx = canvas.getContext("2d");
+
+    let bike = { x:50, y:300, w:40, h:20, dy:0, jump:false };
+    let obstacles = [];
+    let score = 0;
+
+    function drawBike() {
+      ctx.fillStyle = "orange";
+      ctx.fillRect(bike.x, bike.y, bike.w, bike.h);
+      ctx.fillStyle = "black";
+      ctx.fillRect(bike.x+10, bike.y+bike.h, 10, 10); // wheel
+      ctx.fillRect(bike.x+25, bike.y+bike.h, 10, 10); // wheel
+    }
+
+    function drawObstacles() {
+      ctx.fillStyle = "brown";
+      obstacles.forEach(o => ctx.fillRect(o.x, o.y, o.w, o.h));
+    }
+
+    function drawScore() {
+      ctx.fillStyle = "black";
+      ctx.font = "20px Arial";
+      ctx.fillText("Score: " + score, 20, 30);
+    }
+
+    function update() {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+
+      // gravity
+      if (bike.y < 300) {
+        bike.dy += 0.5;
+      } else {
+        bike.dy = 0;
+        bike.y = 300;
+        bike.jump = false;
+      }
+      bike.y += bike.dy;
+
+      // move obstacles
+      obstacles.forEach(o => {
+        o.x -= 4;
+        if (o.x + o.w < 0) {
+          o.x = canvas.width + Math.random()*200;
+          o.y = 300 - Math.random()*50;
+          score++;
+        }
+        // collision
+        if (
+          bike.x < o.x + o.w &&
+          bike.x + bike.w > o.x &&
+          bike.y < o.y + o.h &&
+          bike.y + bike.h > o.y
+        ) {
+          alert("Game Over! Final Score: " + score);
+          score = 0;
+          bike.x = 50; bike.y = 300; bike.dy = 0;
+          obstacles = [];
+          for (let i=0;i<3;i++) {
+            obstacles.push({ x:200+i*200, y:300-Math.random()*50, w:40, h:20 });
+          }
+        }
+      });
+
+      drawBike();
+      drawObstacles();
+      drawScore();
+    }
+
+    document.addEventListener("keydown", e => {
+      if (e.key === " " && !bike.jump) {
+        bike.dy = -10;
+        bike.jump = true;
+      }
+    });
+
+    // initial obstacles
+    for (let i=0;i<3;i++) {
+      obstacles.push({ x:200+i*200, y:300-Math.random()*50, w:40, h:20 });
+    }
+
+    setInterval(update, 1000/60);
+  </script>
+</body>
+</html>
