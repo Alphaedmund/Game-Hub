@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Core Ball Clone</title>
+  <style>
+    body { background:#111; color:#fff; text-align:center; font-family:sans-serif; }
+    canvas { background:#000; display:block; margin:2rem auto; border:2px solid #fff; }
+  </style>
+</head>
+<body>
+  <h1>Core Ball (Mini Clone)</h1>
+  <canvas id="game" width="600" height="400"></canvas>
+  <script>
+    const canvas = document.getElementById("game");
+    const ctx = canvas.getContext("2d");
+
+    let core = { x:300, y:200, r:40, angle:0 };
+    let balls = [];
+    let queue = 10; // balls left to shoot
+    let gameOver = false;
+
+    function drawCore() {
+      ctx.fillStyle = "blue";
+      ctx.beginPath();
+      ctx.arc(core.x, core.y, core.r, 0, Math.PI*2);
+      ctx.fill();
+    }
+
+    function drawBalls() {
+      ctx.fillStyle = "white";
+      balls.forEach(b => {
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, 6, 0, Math.PI*2);
+        ctx.fill();
+      });
+    }
+
+    function drawQueue() {
+      ctx.fillStyle = "white";
+      ctx.font = "20px Arial";
+      ctx.fillText("Balls left: " + queue, 20, 30);
+    }
+
+    function update() {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      if (gameOver) {
+        ctx.fillStyle = "red";
+        ctx.font = "30px Arial";
+        ctx.fillText("Game Over!", 220, 200);
+        return;
+      }
+
+      core.angle += 0.02;
+      drawCore();
+      drawBalls();
+      drawQueue();
+
+      balls.forEach(b => {
+        b.angle += 0.02;
+        b.x = core.x + Math.cos(b.angle)*core.r*2;
+        b.y = core.y + Math.sin(b.angle)*core.r*2;
+      });
+
+      // collision check
+      for (let i=0;i<balls.length;i++) {
+        for (let j=i+1;j<balls.length;j++) {
+          const dx = balls[i].x - balls[j].x;
+          const dy = balls[i].y - balls[j].y;
+          if (Math.sqrt(dx*dx+dy*dy) < 12) {
+            gameOver = true;
+          }
+        }
+      }
+    }
+
+    document.addEventListener("keydown", e => {
+      if (e.key === " " && queue > 0 && !gameOver) {
+        balls.push({ angle: core.angle, x: core.x, y: core.y });
+        queue--;
+      }
+    });
+
+    setInterval(update, 1000/60);
+  </script>
+</body>
+</html>
