@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Slope Clone</title>
+  <style>
+    body { background:#111; color:#fff; text-align:center; font-family:sans-serif; }
+    canvas { background:#000; display:block; margin:2rem auto; border:2px solid #fff; }
+  </style>
+</head>
+<body>
+  <h1>Slope (Mini Clone)</h1>
+  <canvas id="game" width="600" height="400"></canvas>
+  <script>
+    const canvas = document.getElementById("game");
+    const ctx = canvas.getContext("2d");
+
+    let ball = { x: 300, y: 50, r: 10, dx: 0, dy: 2 };
+    let obstacles = [];
+    let score = 0;
+
+    function drawBall() {
+      ctx.fillStyle = "lime";
+      ctx.beginPath();
+      ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    function drawObstacles() {
+      ctx.fillStyle = "red";
+      obstacles.forEach(o => ctx.fillRect(o.x, o.y, o.w, o.h));
+    }
+
+    function drawScore() {
+      ctx.fillStyle = "white";
+      ctx.font = "20px Arial";
+      ctx.fillText("Score: " + score, 20, 30);
+    }
+
+    function update() {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      ball.x += ball.dx;
+      ball.y += ball.dy;
+
+      if (ball.x < ball.r) ball.x = ball.r;
+      if (ball.x > canvas.width - ball.r) ball.x = canvas.width - ball.r;
+
+      obstacles.forEach(o => {
+        o.y += 3;
+        if (o.y > canvas.height) {
+          o.y = -20;
+          o.x = Math.random() * (canvas.width - o.w);
+          score++;
+        }
+        if (
+          ball.x + ball.r > o.x &&
+          ball.x - ball.r < o.x + o.w &&
+          ball.y + ball.r > o.y &&
+          ball.y - ball.r < o.y + o.h
+        ) {
+          alert("Game Over! Final Score: " + score);
+          score = 0;
+          ball.x = 300; ball.y = 50; ball.dx = 0; ball.dy = 2;
+          obstacles = [];
+          for (let i = 0; i < 5; i++) {
+            obstacles.push({ x: Math.random()*560, y: -i*80, w: 40, h: 20 });
+          }
+        }
+      });
+
+      drawBall();
+      drawObstacles();
+      drawScore();
+    }
+
+    document.addEventListener("keydown", e => {
+      if (e.key === "ArrowLeft") ball.dx = -3;
+      if (e.key === "ArrowRight") ball.dx = 3;
+    });
+    document.addEventListener("keyup", () => ball.dx = 0);
+
+    for (let i = 0; i < 5; i++) {
+      obstacles.push({ x: Math.random()*560, y: -i*80, w: 40, h: 20 });
+    }
+
+    setInterval(update, 1000/60);
+  </script>
+</body>
+</html>
